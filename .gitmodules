@@ -1,0 +1,3 @@
+[submodule "Modules/COMP0090_git"]
+	path = Modules/COMP0090_git
+	url = https://github.com/YipengHu/COMP0090.git
