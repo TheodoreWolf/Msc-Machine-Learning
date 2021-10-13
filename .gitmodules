@@ -1,3 +1,6 @@
 [submodule "Modules/COMP0090_git"]
 	path = Modules/COMP0090_git
 	url = https://github.com/YipengHu/COMP0090.git
+[submodule "Modules/Python cheatsheet/python-cheatsheet"]
+	path = Modules/Python cheatsheet/python-cheatsheet
+	url = https://github.com/gto76/python-cheatsheet.git
