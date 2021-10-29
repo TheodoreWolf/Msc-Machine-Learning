@@ -10,6 +10,7 @@
 
 import numpy as np
 import os
+import matplotlib.pyplot as plt
 
 
 def run_ssm_kalman(X, y_init, Q_init, A, Q, C, R, mode='smooth'):
@@ -100,16 +101,31 @@ def run_ssm_kalman(X, y_init, Q_init, A, Q, C, R, mode='smooth'):
 
 
 X = np.loadtxt(os.path.join(r"C:\Users\theod\Desktop\UCL\Machine learning\COMP0086", 'ssm_spins.txt'))
+
 theta = 2 * np.pi / 180
-A = 0.99 * np.array([np.cos(theta), -np.sin(theta), 0, 0],
+A = 0.99 * np.array([[np.cos(theta), -np.sin(theta), 0, 0],
                     [np.sin(theta), np.cos(theta), 0, 0],
                     [0, 0, np.cos(2 * theta), -np.sin(2 * theta)],
-                    [0, 0, np.sin(2 * theta), np.cos(2 * theta)])
-C = np.array([1, 0, 1, 0],
+                    [0, 0, np.sin(2 * theta), np.cos(2 * theta)]])
+
+C = np.array([[1, 0, 1, 0],
              [0, 1, 0, 1],
              [1, 0, 0, 1],
              [0, 0, 1, 1],
-             [0.5, 0.5, 0.5, 0.5])
+             [0.5, 0.5, 0.5, 0.5]])
+
 Q = np.eye(4) - A * np.transpose(A)
 R = np.eye(4)
+Y0 = np.zeros((4, 1))
+Q0 = np.eye(4)
+
+lodget = lambda x: 2 * sum(np.log(np.diag(np.linalg.cholesky(x))))
+cellsum = lambda x: sum(np.concatenate(x, axis=None))
+
+Y, V, not_needed, L = run_ssm_kalman(X,Y0,Q0,A,Q,C,R,'filt')
+
+plt.figure()
+plt.plot(np.transpose(Y))
+plt.plot(map(lodget, [V_elements for V_elements in V]))
+plt.show()
 

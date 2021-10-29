@@ -4,3 +4,6 @@
 [submodule "Modules/Python cheatsheet/python-cheatsheet"]
 	path = Modules/Python cheatsheet/python-cheatsheet
 	url = https://github.com/gto76/python-cheatsheet.git
+[submodule "Modules/COMP0086/UCL_ML_Assignment"]
+	path = Modules/COMP0086/UCL_ML_Assignment
+	url = https://github.com/amitp-ai/UCL_ML_Assignment.git
