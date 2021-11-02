@@ -105,8 +105,8 @@ if __name__ == "__main__":
     X = np.loadtxt("http://www.gatsby.ucl.ac.uk/teaching/courses/ml1/binarydigits.txt")
 
     # We choose the number of mixtures K and iterations I
-    K = 3
-    I = 100
+    K = 6
+    I = 1000
 
     # We run the EM algorithm, outputs are the log-likelihood, the probability matrix, the responsibilities and
     # the mixture probability respectively
@@ -120,5 +120,6 @@ if __name__ == "__main__":
                    cmap='gray')
         plt.axis('off')
     plt.show()
+    print(l)
 
 
