@@ -28,6 +28,7 @@ def main():
     print(prob_vec)
     # Showing the average picture
     plt.figure()
+    plt.title("MLE estimate")
     np.array(prob_vec)
     plt.imshow(np.reshape(prob_vec, (8, 8)), interpolation="None", cmap="gray")
     plt.axis("off")
@@ -35,8 +36,8 @@ def main():
     """
     MAP
     """
-    a = 3
-    b = 3
+    a = 2
+    b = 2
     # Finding the MAP parameter for each pixel across all images
     prob_vec = []
     for d in range(D):
@@ -48,6 +49,7 @@ def main():
     print(prob_vec)
     # Showing the average picture
     plt.figure()
+    plt.title("MAP estimate")
     np.array(prob_vec)
     plt.imshow(np.reshape(prob_vec, (8, 8)), interpolation="None", cmap="gray")
     plt.axis("off")

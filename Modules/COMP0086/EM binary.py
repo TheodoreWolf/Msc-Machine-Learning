@@ -72,7 +72,7 @@ def EM(K, X, iterations):
     probabilities = np.random.rand(D, K)
 
     #  We define a cut off so that we end the iterations if the log-likelihood converges
-    cut_off = 0.0000000001
+    cut_off = 0
 
     # The entries of the piks (pi index k plural) need to sum to one: we can use a random Dirichlet sample
     piks = np.random.dirichlet(np.ones([K]), size=1).T
@@ -92,7 +92,7 @@ def EM(K, X, iterations):
         likelihoods.append(compute_likelihood(N, D, X, probabilities, piks))
 
         # check for convergence after the first loop
-        if i > 1:
+        if i > 10:
             if likelihoods[i]-likelihoods[i-1] < cut_off:
                 print("Reached cut-off after {} iterations".format(i))
                 break
@@ -105,7 +105,7 @@ if __name__ == "__main__":
     X = np.loadtxt("http://www.gatsby.ucl.ac.uk/teaching/courses/ml1/binarydigits.txt")
 
     # We choose the number of mixtures K and iterations I
-    K = 6
+    K = 3
     I = 1000
 
     # We run the EM algorithm, outputs are the log-likelihood, the probability matrix, the responsibilities and
@@ -120,6 +120,5 @@ if __name__ == "__main__":
                    cmap='gray')
         plt.axis('off')
     plt.show()
-    print(l)
 
 
