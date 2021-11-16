@@ -6,6 +6,7 @@ Ported to Python by Raza Habib and Jamie Townsend 2017
 import numpy as np
 from matplotlib import pyplot as plt
 import os
+import scipy.special as sp
 
 
 # Python comments use a hash
@@ -14,7 +15,6 @@ def main():
     # load the data set
     Y = np.loadtxt(os.path.join(r"C:\Users\theod\Desktop\UCL\Machine learning\COMP0086", 'binarydigits.txt'))
     N, D = Y.shape
-
     """
     MLE
     """
@@ -53,7 +53,6 @@ def main():
     np.array(prob_vec)
     plt.imshow(np.reshape(prob_vec, (8, 8)), interpolation="None", cmap="gray")
     plt.axis("off")
-
 
     # this is how you display one image using matplotlib,
     # e.g. the 4th image:

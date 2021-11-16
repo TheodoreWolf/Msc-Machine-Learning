@@ -39,6 +39,7 @@ def EM(K, X, iterations):
                 # We then increase the denominator with the bernoulli over all d
                 denominator += bernoulli * piks[k, :]
 
+
                 # And compute the un-normalised responsibilities for given [n,k]
                 responsibilities[n, k] = piks[k, :] * bernoulli
 
@@ -105,13 +106,13 @@ if __name__ == "__main__":
     X = np.loadtxt("http://www.gatsby.ucl.ac.uk/teaching/courses/ml1/binarydigits.txt")
 
     # We choose the number of mixtures K and iterations I
-    K = 3
-    I = 1000
+    K = 6
+    I = 10000
 
     # We run the EM algorithm, outputs are the log-likelihood, the probability matrix, the responsibilities and
     # the mixture probability respectively
     l, p, r, pi = EM(K, X, I)
-
+    print(l)
     # We can plot the different probabilities for each mixture in the same way as in binarydigits.py
     for i in range(K):
         plt.subplot(1, K, i + 1)
