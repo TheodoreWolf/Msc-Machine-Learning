@@ -133,7 +133,7 @@ def decryption(message, symbols, training):
     random.shuffle(sigma)
     acceptation = []
     # we decide the number of iterations
-    N = 50000
+    N = 100000
     for n in tqdm(range(N)):
 
         # we do a step of MH

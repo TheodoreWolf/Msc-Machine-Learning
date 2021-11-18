@@ -39,7 +39,6 @@ def EM(K, X, iterations):
                 # We then increase the denominator with the bernoulli over all d
                 denominator += bernoulli * piks[k, :]
 
-
                 # And compute the un-normalised responsibilities for given [n,k]
                 responsibilities[n, k] = piks[k, :] * bernoulli
 
@@ -93,10 +92,10 @@ def EM(K, X, iterations):
         likelihoods.append(compute_likelihood(N, D, X, probabilities, piks))
 
         # check for convergence after the first loop
-        if i > 10:
-            if likelihoods[i]-likelihoods[i-1] < cut_off:
-                print("Reached cut-off after {} iterations".format(i))
-                break
+        #if i > 10:
+        #    if likelihoods[i]-likelihoods[i-1] < cut_off:
+        #        print("Reached cut-off after {} iterations".format(i))
+        #        break
 
     return likelihoods, probabilities, responsibilities, piks
 
@@ -106,20 +105,35 @@ if __name__ == "__main__":
     X = np.loadtxt("http://www.gatsby.ucl.ac.uk/teaching/courses/ml1/binarydigits.txt")
 
     # We choose the number of mixtures K and iterations I
-    K = 6
-    I = 10000
+    I = 100
+    likelihoods = np.zeros((5, I+1))
+    it= 0
+    Kvalues = [2, 3, 4, 7, 10]
+    for K in Kvalues:
 
-    # We run the EM algorithm, outputs are the log-likelihood, the probability matrix, the responsibilities and
-    # the mixture probability respectively
-    l, p, r, pi = EM(K, X, I)
-    print(l)
-    # We can plot the different probabilities for each mixture in the same way as in binarydigits.py
-    for i in range(K):
-        plt.subplot(1, K, i + 1)
-        plt.imshow(np.reshape(p[:, i], (8, 8)),
-                   interpolation="None",
-                   cmap='gray')
-        plt.axis('off')
+        # We run the EM algorithm, outputs are the log-likelihood, the probability matrix, the responsibilities and
+        # the mixture probability respectively
+        l, p, r, pi = EM(K, X, I)
+        likelihoods[it, :] = l
+        it += 1
+        # We can plot the different probabilities for each mixture in the same way as in binarydigits.py
+        plt.figure()
+        for i in range(K):
+            plt.subplot(1, K, i + 1)
+            plt.imshow(np.reshape(p[:, i], (8, 8)),
+                       interpolation="None",
+                       cmap='gray')
+            plt.axis('off')
+        plt.title("K={}".format(K))
+
+    # we plot everything
+    x = np.linspace(0, 100, I+1)
+    plt.figure()
+    for column in range(5):
+        plt.plot(x, likelihoods[column, :], label="K={}".format(Kvalues[column]))
+    plt.grid()
+    plt.legend()
     plt.show()
+
 
 
