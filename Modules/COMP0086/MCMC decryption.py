@@ -2,7 +2,7 @@ import numpy as np
 import requests
 import re
 import random
-from tqdm import tqdm
+
 
 # we import all the data
 
@@ -50,7 +50,7 @@ def decryption(message, symbols, training):
             j = 0
             for next_char in symbols:
                 # we add +1 everywhere for stability
-                transition_matrix[i, j] = training.count(previous_char+next_char)+1
+                transition_matrix[i, j] = training.count(previous_char+next_char)+0.0000001
                 j += 1
             i += 1
 
@@ -130,11 +130,11 @@ def decryption(message, symbols, training):
 
     # we create the sigma vector, it is simply 0-52 corresponding to the order of the letters in the file given
     sigma = [i for i in range(53)]
-    random.shuffle(sigma)
+    #random.shuffle(sigma)
     acceptation = []
     # we decide the number of iterations
     N = 100000
-    for n in tqdm(range(N)):
+    for n in range(N):
 
         # we do a step of MH
 
@@ -145,10 +145,11 @@ def decryption(message, symbols, training):
         # we use the new sigma
         sigma = new_sigma
 
-        if n % 1000 == 0:
+        if n % 100 == 0:
             print("Likelihood: {:.2f}, accept={:.4f}".format(prob,
                                                               sum(acceptation)/len(acceptation)),
-                                                              decrypt_message(sigma, message, symbols_clean))
+                                                              decrypt_message(sigma, message, symbols_clean)[:60])
+            #print(n ,decrypt_message(sigma, message, symbols_clean)[:60])
 
     print(decrypt_message(sigma, message, symbols_clean))
 

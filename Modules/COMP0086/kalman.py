@@ -99,33 +99,156 @@ def run_ssm_kalman(X, y_init, Q_init, A, Q, C, R, mode='smooth'):
 
     return y_hat, V_hat, V_joint, likelihood
 
+def M_step(X, y_hat, V_hat, V_joint):
+    """
+    M-step for the EM algorithm
+    """
+    # we follow the equations in the notes and in the question to create the matrices A,C,Q and R
+    # We note that the V and Vj are variances
+    t_max = X.shape[1]
+    A_new = (np.sum(V_joint[:999, :, :], axis=0) + y_hat[:, 1:] @ y_hat[:, :999].T) @ np.linalg.inv(np.sum(V_hat, axis=0) + y_hat @ y_hat.T)
+    C_new = X @ y_hat.T @ np.linalg.inv(np.sum(V_hat, axis=0) + y_hat @ y_hat.T)
+    R_new = 1/t_max * (X@X.T - X@y_hat.T @ C_new.T)
+    Q_new = 1/(t_max-1) * ((np.sum(V_hat[1:, :, :], axis=0) + y_hat[:, 1:] @ y_hat[:, 1:].T
+                           - (np.sum(V_joint[:999, :, :], axis=0) + y_hat[:, 1:] @ y_hat[:, :999].T)  @ A_new.T))
 
-X = np.loadtxt(os.path.join(r"C:\Users\theod\Desktop\UCL\Machine learning\COMP0086", 'ssm_spins.txt'))
+    return A_new, C_new, R_new, Q_new
 
-theta = 2 * np.pi / 180
-A = 0.99 * np.array([[np.cos(theta), -np.sin(theta), 0, 0],
-                    [np.sin(theta), np.cos(theta), 0, 0],
-                    [0, 0, np.cos(2 * theta), -np.sin(2 * theta)],
-                    [0, 0, np.sin(2 * theta), np.cos(2 * theta)]])
+def EM_initial(N,X, X_test):
 
-C = np.array([[1, 0, 1, 0],
-             [0, 1, 0, 1],
-             [1, 0, 0, 1],
-             [0, 0, 1, 1],
-             [0.5, 0.5, 0.5, 0.5]])
+    """
+    We define an EM loop that uses the given inital parameters by the question
+    """
+    theta = 2 * np.pi / 180
+    A = 0.99 * np.array([[np.cos(theta), -np.sin(theta), 0, 0],
+                         [np.sin(theta), np.cos(theta), 0, 0],
+                         [0, 0, np.cos(2 * theta), -np.sin(2 * theta)],
+                         [0, 0, np.sin(2 * theta), np.cos(2 * theta)]])
 
-Q = np.eye(4) - A * np.transpose(A)
-R = np.eye(4)
-Y0 = np.zeros((4, 1))
-Q0 = np.eye(4)
+    C = np.array([[1, 0, 1, 0],
+                  [0, 1, 0, 1],
+                  [1, 0, 0, 1],
+                  [0, 0, 1, 1],
+                  [0.5, 0.5, 0.5, 0.5]])
 
-lodget = lambda x: 2 * sum(np.log(np.diag(np.linalg.cholesky(x))))
-cellsum = lambda x: sum(np.concatenate(x, axis=None))
+    Q = np.eye(4) - A @ A.T
+    R = np.eye(5)
+    Y0 = np.zeros((4,))
+    Q0 = np.eye(4)
 
-Y, V, not_needed, L = run_ssm_kalman(X,Y0,Q0,A,Q,C,R,'filt')
+    likelihoods = []
+    for n in range(N):
+        Y, V, Vj, L = run_ssm_kalman(X, Y0, Q0, A, Q, C, R, 'smooth')
+        A, C, R, Q = M_step(X, Y, V, Vj)
+        likelihoods.append(np.sum(L))
 
-plt.figure()
-plt.plot(np.transpose(Y))
-plt.plot(map(lodget, [V_elements for V_elements in V]))
-plt.show()
+    # we use the parameters found to find the likelihood on the test set
+    Y_, V_, Vj_, L_test = run_ssm_kalman(X_test, Y0, Q0, A, Q, C, R, 'smooth')
+    return likelihoods, np.sum(L_test)
 
+
+def EM_random(N,X, X_test):
+    """
+    We define an EM loop that uses random parameters to initialise
+    """
+    # certain seeds work better than others and give nicer plots
+    #np.random.seed(144) # bad: 504,54,1,2 good: 3,10, 144
+    A = np.random.rand(4, 4)
+
+    C = np.random.rand(5, 4)
+
+    Q = np.eye(4) - A @ A.T
+    R = np.eye(5)
+    Y0 = np.random.randn(4,)
+    Q0 = np.eye(4)
+
+
+    likelihoods = []
+    for n in range(N):
+        Y, V, Vj, L = run_ssm_kalman(X, Y0, Q0, A, Q, C, R, 'smooth')
+        A, C, R, Q = M_step(X, Y, V, Vj)
+        likelihoods.append(np.sum(L))
+    # we use the parameters found to find the likelihood on the test set
+    Y_, V_, Vj_, L_test = run_ssm_kalman(X_test, Y0, Q0, A, Q, C, R, 'smooth')
+    return likelihoods, np.sum(L_test)
+
+def plot_q_a(X):
+    """
+    function to plot the plots requested in part a
+    """
+    theta = 2 * np.pi / 180
+    A = 0.99 * np.array([[np.cos(theta), -np.sin(theta), 0, 0],
+                         [np.sin(theta), np.cos(theta), 0, 0],
+                         [0, 0, np.cos(2 * theta), -np.sin(2 * theta)],
+                         [0, 0, np.sin(2 * theta), np.cos(2 * theta)]])
+
+    C = np.array([[1, 0, 1, 0],
+                  [0, 1, 0, 1],
+                  [1, 0, 0, 1],
+                  [0, 0, 1, 1],
+                  [0.5, 0.5, 0.5, 0.5]])
+
+    Q = np.eye(4) - A @ A.T
+    R = np.eye(5)
+    Y0 = np.zeros((4,))
+    Q0 = np.eye(4)
+    logdet = lambda x: 2 * np.sum(np.log(np.diag(np.linalg.cholesky(x))))
+    Y, V, Vj, L = run_ssm_kalman(X, Y0, Q0, A, Q, C, R, 'filt')
+    plt.figure()
+    plt.plot(Y.T)
+    vector = [logdet(V_elements) for V_elements in V]
+    plt.show()
+    plt.figure()
+    plt.plot(vector)
+    plt.show()
+    Y, V, Vj, L = run_ssm_kalman(X,Y0,Q0,A,Q,C,R,'smooth')
+    plt.figure()
+    plt.plot(Y.T)
+    vector = [logdet(V_elements) for V_elements in V]
+    plt.show()
+    plt.figure()
+    plt.plot(vector)
+    plt.show()
+
+N = 50
+seed = [3, 10, 144, 50, 34] # seeds that work well (not used)
+X = np.loadtxt("http://www.gatsby.ucl.ac.uk/teaching/courses/ml1/ssm_spins.txt").T
+X_test = np.loadtxt("http://www.gatsby.ucl.ac.uk/teaching/courses/ml1/ssm_spins_test.txt").T
+
+
+if __name__ == "__main__":
+    plot_q_a(X)
+
+    # for part b we want to run the EM algorithm multiple times for different initial conditions
+    # for part c we want to compare the final likelihood of the training set and use those parameters on the test set.
+    test_set = []
+
+    # we save the final likelihoods and test likelihoods to make a table
+    likes = np.zeros((11,2))
+
+    # True parameters first
+    L, L_test = EM_initial(N, X, X_test)
+    likes[10,:] = L[-1], L_test
+    plt.figure()
+
+    plt.plot(L, label="Given Initials")
+
+    test_set.append(L_test)
+
+    # we plot the likelihood of the test set as a point on the right of the plot for easier comparison
+    plt.plot(N-1, L_test,".", label="Test Set with True")
+
+    for n in range(10):
+        L_r, L_test = EM_random(N,X,X_test)
+        plt.plot(L_r)
+        test_set.append(L_test)
+        likes[n, :] = L_r[-1], L_test
+
+    plt.xlabel("Iterations")
+    plt.ylabel("Log-Likelihood")
+
+    # we plot the likelihood of the test set as a point on the right of the plot for easier comparison
+    plt.plot(N*np.ones((len(likes[:, 1]))), [i for i in likes[:, 1]], ".", label="Test set with random")
+    plt.grid()
+    plt.legend()
+    plt.show()

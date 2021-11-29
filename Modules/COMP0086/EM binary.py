@@ -3,6 +3,7 @@ import math
 import matplotlib.pyplot as plt
 from tqdm import tqdm
 
+
 def EM(K, X, iterations):
     """
     We define the EM algorithm which takes the number of mixtures k, the dataset X and the number of iterations
@@ -16,7 +17,7 @@ def EM(K, X, iterations):
             for k in range(K):
                 bernoulli = 1
                 for d in range(D):
-                    bernoulli *= probabilities[d, k]**(X[n, d]) * (1-probabilities[d, k])**(1 - X[n, d])
+                    bernoulli *= probabilities[d, k] ** (X[n, d]) * (1 - probabilities[d, k]) ** (1 - X[n, d])
                 sum_bern += bernoulli * piks[k, :]
             likelihood += np.log(sum_bern)
         return likelihood
@@ -34,7 +35,7 @@ def EM(K, X, iterations):
                 bernoulli = 1
                 for d in range(D):
                     # computing the bernoulli for a given n, k and d
-                    bernoulli *= probabilities[d, k]**(X[n, d]) * (1 - probabilities[d, k])**(1 - X[n, d])
+                    bernoulli *= probabilities[d, k] ** (X[n, d]) * (1 - probabilities[d, k]) ** (1 - X[n, d])
 
                 # We then increase the denominator with the bernoulli over all d
                 denominator += bernoulli * piks[k, :]
@@ -72,7 +73,7 @@ def EM(K, X, iterations):
     probabilities = np.random.rand(D, K)
 
     #  We define a cut off so that we end the iterations if the log-likelihood converges
-    cut_off = 0
+    cut_off = 1e-10
 
     # The entries of the piks (pi index k plural) need to sum to one: we can use a random Dirichlet sample
     piks = np.random.dirichlet(np.ones([K]), size=1).T
@@ -81,7 +82,6 @@ def EM(K, X, iterations):
     likelihoods = [compute_likelihood(N, D, X, probabilities, piks)]
 
     for i in tqdm(range(iterations)):
-
         # E-step first
         responsibilities = E_step(N, D, X, piks, probabilities)
 
@@ -92,7 +92,7 @@ def EM(K, X, iterations):
         likelihoods.append(compute_likelihood(N, D, X, probabilities, piks))
 
         # check for convergence after the first loop
-        #if i > 10:
+        # if i > 10:
         #    if likelihoods[i]-likelihoods[i-1] < cut_off:
         #        print("Reached cut-off after {} iterations".format(i))
         #        break
@@ -106,8 +106,8 @@ if __name__ == "__main__":
 
     # We choose the number of mixtures K and iterations I
     I = 100
-    likelihoods = np.zeros((5, I+1))
-    it= 0
+    likelihoods = np.zeros((5, I + 1))
+    it = 0
     Kvalues = [2, 3, 4, 7, 10]
     for K in Kvalues:
 
@@ -119,21 +119,26 @@ if __name__ == "__main__":
         # We can plot the different probabilities for each mixture in the same way as in binarydigits.py
         plt.figure()
         for i in range(K):
-            plt.subplot(1, K, i + 1)
+            plt.subplot(int(round(np.sqrt(K), 0)),int(round(np.sqrt(K), 0))+1, i + 1)
             plt.imshow(np.reshape(p[:, i], (8, 8)),
                        interpolation="None",
                        cmap='gray')
             plt.axis('off')
         plt.title("K={}".format(K))
 
-    # we plot everything
-    x = np.linspace(0, 100, I+1)
-    plt.figure()
-    for column in range(5):
-        plt.plot(x, likelihoods[column, :], label="K={}".format(Kvalues[column]))
-    plt.grid()
-    plt.legend()
+        # we plot responsibilities
+        plt.figure()
+        plt.plot(range(100), r, ".")
+        plt.title("Responsibilities for K={}".format(K))
+
+        # we print piks
+        #print(K, pi)
     plt.show()
-
-
-
+    # we plot everything
+    # x = np.linspace(0, 100, I + 1)
+    # plt.figure()
+    # for column in range(5):
+    #     plt.plot(x, likelihoods[column, :], label="K={}".format(Kvalues[column]))
+    # plt.grid()
+    # plt.legend()
+    # plt.show()
