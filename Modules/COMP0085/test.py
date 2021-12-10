@@ -9,4 +9,8 @@ def fibonacci(n):
         b = c
 
     print(series)
+
 fibonacci(50)
+f = fibonacci
+
+f(50)
