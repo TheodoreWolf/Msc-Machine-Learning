@@ -52,19 +52,64 @@ def question_b():
     print(np.mean(residuals))
     print(np.std(residuals))
 
-def question_c():
-    cov_kernel = kernel_function(x,x)
-    mean = np.zeros((cov_kernel.shape[0],))
-    samples = np.random.randn(mean, cov_kernel, 100)
+def question_cd():
+
+    def naive_GP():
+        cov_kernel = kernel_function(time, time)
+        mean = np.zeros((cov_kernel.shape[0],))
+        samples = np.random.multivariate_normal(mean, cov_kernel, 10).T
+
+        plt.plot(time, samples)
+
+    def post_GP():
+
+        # y = np.array([labels[10], labels[40], labels[46], labels[305], labels[406]])
+        # x = np.array([time[10], time[40], time[46], time[305], time[406]])
+        x = time
+        y = labels
+        domain = np.linspace(1950, 2050, 1000)
+        K = kernel_function(domain, domain)
+        Kxx = kernel_function(x, x)
+        Kx = kernel_function(domain, x)
+        Kxx_inv = np.linalg.pinv(Kxx)
+
+        mean = Kx @ Kxx_inv @ y
+        Cov = K - Kx @ Kxx_inv @ Kx.T
+
+        samples = np.random.multivariate_normal(mean, Cov, 1).T
+
+        std = np.diag(Cov)**0.5
+        plt.fill_between(domain, mean - std, mean + std, color='k', alpha=0.1)
+        plt.fill_between(domain, mean - 2 * std, mean + 2 * std, color='k', alpha=0.1)
+        plt.plot(domain, samples)
+
+    post_GP()
+    #plt.plot(time, labels)
 
 def kernel_function(s, t):
-    cov_kernel = None
+    s = s.reshape(-1, 1)
+    t = t.reshape(1, -1)
+    theta = 1
+    tau = 1
+    sigma = 1
+    phi = 1
+    eta = 1
+    zeta = 0.01
+
+    # cov_kernel = theta^2(A + B) +C
+
+    A = np.exp(-2 / (sigma**2) * (np.sin(np.pi*(s-t)/tau))**2)
+    B = phi**2 * np.exp(-((s-t)**2)/(2 * eta**2))
+    C = zeta**2 * (s == t)
+
+    cov_kernel = theta**2 * (A+B) + C
+
     return cov_kernel
 
 
 if __name__ == "__main__":
     #question_a()
     #question_b()
-    question_c()
+    question_cd()
     plt.show()
 
