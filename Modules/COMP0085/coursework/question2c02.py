@@ -76,7 +76,7 @@ def question_cd():
         mean = Kx @ Kxx_inv @ y
         Cov = K - Kx @ Kxx_inv @ Kx.T
 
-        samples = np.random.multivariate_normal(mean, Cov, 1).T
+        samples = np.random.multivariate_normal(mean, Cov, 3).T
 
         std = np.diag(Cov)**0.5
         plt.fill_between(domain, mean - std, mean + std, color='k', alpha=0.1)
