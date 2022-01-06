@@ -1,7 +1,6 @@
 import numpy as np
 
-
-def m_step(X, ES, ESS):
+def M_step(X, ES, ESS):
     """
     mu, sigma, pie = MStep(X,ES,ESS)
 
