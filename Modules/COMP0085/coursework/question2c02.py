@@ -77,10 +77,12 @@ def question_b():
     plt.legend()
 
     plt.figure()
-    plt.plot(time, residuals)
+    plt.plot(time, residuals, label="Residuals")
     plt.xlabel("Date (decimal year)")
     plt.ylabel("Residual")
-    plt.plot(time, np.random.randn(500))
+    plt.plot(time, np.random.randn(500),label="Random Standard Gaussian noise")
+    plt.plot(time, np.random.randn(500)*2.681)
+    plt.legend()
 
 
 def question_cd():
@@ -151,13 +153,22 @@ def question_ef():
     f_m = mean + features_new @ post_mean
 
     std = np.diag(Cov).flatten()**0.5
-    plt.errorbar(domain, f_m, yerr=std, elinewidth=0.7, ecolor="darkgrey", label="Extrapolation")
 
 
+    plt.figure()
     plt.plot(x, y, label="Data")
+    plt.errorbar(domain, f_m, yerr=std, elinewidth=0.7, ecolor="darkgrey", label="Extrapolation")
     z = np.linspace(min(x), end, 1000)
     plt.plot(z, z*post_mean[0]+post_mean[1], label="MAP weights")
+    plt.legend()
+    plt.xlabel("Date (decimal year)")
+    plt.ylabel("$CO_2$ ppm")
 
+
+    plt.figure()
+    z = np.linspace(begin, end, 1000)
+    plt.plot(z, z * post_mean[0] + post_mean[1], label="MAP weights")
+    plt.errorbar(domain, f_m, yerr=std, elinewidth=0.7, ecolor="darkgrey", label="Extrapolation")
     plt.legend()
     plt.xlabel("Date (decimal year)")
     plt.ylabel("$CO_2$ ppm")
@@ -166,6 +177,6 @@ if __name__ == "__main__":
     #question_a()
     #question_b()
     #question_cd()
-    question_ef()
+    #question_ef()
     plt.show()
 

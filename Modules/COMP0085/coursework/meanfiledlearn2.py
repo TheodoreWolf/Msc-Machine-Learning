@@ -64,12 +64,14 @@ def MeanField(X, mu, sigma, pie, lambda0, maxsteps):
 
         # Iteratively update lambda: we are updating the mean value at all data points for a certain latent dimension
         lambda_new = lambd
+
         for k in range(K):
             x = (np.log(pie[:, k]/(1-pie[:, k]))
                  + 1 / (sigma**2)
                  * ((X-lambda_new@mu.T)@mu[:, k]+lambda_new[:, k]*diag_mu[k]
                  - 0.5*diag_mu[k])
                  )
+            x[x<-700] = -700
             lambda_new[:, k] = 1/(1+np.exp(-x))
 
         # we calculate f with this new lambda

@@ -6,7 +6,7 @@ from Mean_field_learning import MeanField, compute_ESS, calculate_F
 from genimages import generate_data
 
 
-def LearnBinFactors(X, K, iterations, params=None):
+def LearnBinFactors(X, K, iterations):
 
     # dimensions
     N, D = X.shape
@@ -16,15 +16,13 @@ def LearnBinFactors(X, K, iterations, params=None):
     F_list = []
     maxsteps = 300
 
-    if params is None:
-        # 1, 10, seed 101 with 800 datapoints for almost perfect, 6700 with 400 for 7/8 , 6009 with 400 for rly good, 0:400
-        np.random.seed(101)
-        lambda0 = np.random.rand(N, K)
-        ES, ESS = compute_ESS(lambda0)
-        mu, sigma, pie = M_step(X, ES, ESS)
-        lambd = lambda0
-    else:
-        lambd, mu, sigma, pie = params
+    # 1, 10, seed 101 with 800 datapoints for almost perfect, 6700 with 400 for 7/8 , 6009 with 400 for rly good, 0:400, 789
+    np.random.seed(789)
+    lambda0 = np.random.rand(N, K)
+    ES, ESS = compute_ESS(lambda0)
+    mu, sigma, pie = M_step(X, ES, ESS)
+    lambd = lambda0
+
 
     for i in range(iterations):
 
@@ -52,7 +50,7 @@ def LearnBinFactors(X, K, iterations, params=None):
             # check for increase in F
             assert F_list[-1] >= F_list[-2]
 
-    plt.figure()
+    var = plt.figure()
     plt.plot(F_list)
     plt.xlabel("Iteration")
     plt.ylabel("Variational Free Energy")
@@ -62,7 +60,7 @@ def LearnBinFactors(X, K, iterations, params=None):
 
 if __name__ == "__main__":
 
-    X, original = generate_data(800, 16)
+    X, original = generate_data(400, 16)
     K = 8
     mu, sigma, pie, lambd = LearnBinFactors(X, K, 300)
 
@@ -81,11 +79,18 @@ if __name__ == "__main__":
     #     plt.axis('off')
 
     plt.figure()
-    l, f = MeanField(X[0,:][None, :], mu, sigma, pie, lambd[0,:][None,:], 100)
-    plt.figure()
+    sigma = [1, 2, 8]
+    for s in sigma:
+        l, f = MeanField(X[0,:][None, :], mu, s, pie, lambd[0,:][None,:], 100)
 
-    for t in range(len(f)):
-        if t > 0:
-            plt.plot(np.log(f[t] - f[t - 1]))
+        plt.figure()
+        loglist = []
+        for t in range(len(f)):
+            if t > 0:
+                loglist.append(np.log(f[t] - f[t - 1]))
+        plt.plot(loglist, label="$\sigma$={}".format(s))
+        plt.legend()
+
+
 
     plt.show()
