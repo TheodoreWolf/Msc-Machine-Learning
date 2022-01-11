@@ -11,7 +11,7 @@ def compute_ESS(lambd):
 
     return ES, ESS
 
-def calculate_F(X, mu, sigma, pie, lambd):
+def calculate_F(X, mu, sigma, pie, lambd, alpha):
 
     N, D = X.shape
     N_,K = lambd.shape
@@ -21,6 +21,9 @@ def calculate_F(X, mu, sigma, pie, lambd):
     lambd[lambd >= 1] = 1 - epsilon2
     lambd[lambd <= 0] = epsilon2
 
+    # mu[mu<0] = 0
+    # mu[mu>1] = 1
+
     ES, ESS = compute_ESS(lambd)
 
     F = (np.sum(lambd * np.log(pie/lambd) + (1-lambd) * np.log((1-pie)/(1-lambd)))
@@ -29,11 +32,13 @@ def calculate_F(X, mu, sigma, pie, lambd):
                           + np.trace(mu.T @ mu @ ESS)
                           - 2 * np.trace(ES.T @ X @ mu)
                           )
+         - 0.5 *D*np.sum( np.log(2 * np.pi * alpha**(-1)))
+         - np.sum( alpha/2 * np.diag(mu.T@mu))
          )
 
     return F
 
-def MeanField(X, mu, sigma, pie, lambda0, maxsteps):
+def MeanField(X, mu, sigma, pie, lambda0, alpha, maxsteps):
     '''
 
     :param X: (NxD) data matrix
@@ -71,11 +76,14 @@ def MeanField(X, mu, sigma, pie, lambda0, maxsteps):
                  * ((X-lambda_new@mu.T)@mu[:, k]+lambda_new[:, k]*diag_mu[k]
                  - 0.5*diag_mu[k])
                  )
-            x[x<-700] = -700
+            x[x < -700] = -700
             lambda_new[:, k] = 1/(1+np.exp(-x))
 
+
+
+
         # we calculate f with this new lambda
-        F_new = calculate_F(X, mu, sigma, pie, lambda_new)
+        F_new = calculate_F(X, mu, sigma, pie, lambda_new, alpha)
         F_list.append(F_new)
 
         # stopping criterion

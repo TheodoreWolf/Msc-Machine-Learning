@@ -55,7 +55,7 @@ def MeanField(X, mu, sigma, pie, lambda0, maxsteps):
     lambd = lambda0
 
     # Stopping criterion
-    epsilon = 1e-15
+    epsilon = 1e-100
 
     # constants
     diag_mu = np.diag(mu.T@mu).flatten()
