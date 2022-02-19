@@ -3,9 +3,11 @@ import matplotlib.pyplot as plt
 
 def compute_ESS(lambd):
 
+   # function to compute the ESS give lambda
     N, K = lambd.shape
     ES = lambd
 
+    # ESS is the lambdas squared summed over N with the diagonal switched
     ESS = lambd.T @ lambd
     ESS = ESS - np.diag(np.diag(ESS)) + np.diag(np.sum(lambd, axis=0))
 
@@ -13,6 +15,7 @@ def compute_ESS(lambd):
 
 def calculate_F(X, mu, sigma, pie, lambd):
 
+    # function to calculate F
     N, D = X.shape
     N_,K = lambd.shape
 

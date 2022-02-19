@@ -33,7 +33,7 @@ def M_step(X, ES, ESS):
 
     return mu, sigma, pie
 
-def M_step_alpha(X, ES, ESS, alpha, sigma, mu):
+def M_step_alpha(X, ES, ESS, mu, b):
     """
     mu, sigma, pie = MStep(X,ES,ESS)
 
@@ -59,21 +59,15 @@ def M_step_alpha(X, ES, ESS, alpha, sigma, mu):
     if ESS.shape != (K, K):
         raise TypeError('ESS must be square and have the same number of columns as ES')
 
+    exp_mitmi = mu.T@mu + np.diag(b)
 
-
-    mu = (np.linalg.inv(ESS +  alpha * sigma ** 2 ).T @ ((ES.T @ X))).T
-    sigma = np.sqrt((np.trace(np.dot(X.T, X)) + np.trace(np.dot(np.dot(mu.T, mu), ESS))
+    sigma = np.sqrt((np.trace(np.dot(X.T, X)) + np.trace(np.dot(exp_mitmi, ESS))
                  - 2 * np.trace(np.dot(np.dot(ES.T, X), mu))) / (N * D))
     pie = np.mean(ES, axis=0, keepdims=True)
+    alpha = np.diag(exp_mitmi)**(-1)*D
 
+    alpha[alpha>1e100] = 1e100
+    alpha[alpha<1e-100] = 1e-100
 
-    return mu, sigma, pie
+    return alpha, sigma, pie
 
-def re_update(X,mu, ES, ESS):
-
-    N, D = X.shape
-    K = ES.shape[1]
-
-    alpha = (np.diag(mu.T @ mu)) ** (-1) * D
-
-    return alpha

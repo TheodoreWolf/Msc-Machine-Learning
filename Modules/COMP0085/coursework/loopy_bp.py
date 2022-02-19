@@ -91,37 +91,6 @@ def EP(X, mu, sigma, pie, message0, maxsteps):
                 # we use our damping parameter to help convergence
                 message[i, j,:] = a * message[i, j,:] + (1 - a) * np.log(omega1)
 
-        # for n in range(N):
-        #     nth_message = message0[:,:,n]
-        #     for i in range(K):
-        #         for j in range(i+1, K):
-        #
-        #             # we use a damping parameter
-        #             a = 0.5
-        #
-        #             # update the message from j to i
-        #             omega0 = f[n,j]+np.sum(nth_message[:,j])-nth_message[i,j]
-        #             W = -mu[:,i].T @ mu[:,j]/(sigma**2)
-        #
-        #             # we use our equation for the update to omega
-        #             omega1 = (np.exp(omega0+W)+1)/(1+np.exp(omega0))
-        #
-        #             nth_message[j, i] = a*nth_message[j,i] + (1-a)*np.log(omega1)
-        #
-        #
-        #             # update the message from i to j (reverse message)
-        #
-        #             omega0 = f[n, i] + np.sum(nth_message[:, i]) - nth_message[j, i]
-        #             W = -mu[:, j].T @ mu[:, i] / (sigma ** 2)
-        #
-        #             # we use our equation for the update to omega
-        #             omega1 = (np.exp(omega0 + W) + 1) / (1 + np.exp(omega0))
-        #
-        #             nth_message[i, j] = a * nth_message[i, j] + (1 - a) * np.log(omega1)
-        #
-        #
-        #     message[:,:,n] = nth_message
-
         lambdas = np.zeros((N, K))
         for n in range(N):
             eta = f[n, :]+np.sum(message[:,:,n], axis=0)
@@ -130,11 +99,5 @@ def EP(X, mu, sigma, pie, message0, maxsteps):
         # we calculate f with this new lambda
         F_new = calculate_F(X, mu, sigma, pie, lambdas)
         F_list.append(F_new)
-
-        # if np.mean(message-message0,axis=(0,1,2)) <= epsilon:
-        #     break
-
-        #message0 = message
-
 
     return lambdas, F_list, message
