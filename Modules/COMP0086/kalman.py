@@ -210,7 +210,7 @@ def plot_q_a(X):
     plt.plot(vector)
     plt.show()
 
-N = 50
+N = 200
 seed = [3, 10, 144, 50, 34] # seeds that work well (not used)
 X = np.loadtxt("http://www.gatsby.ucl.ac.uk/teaching/courses/ml1/ssm_spins.txt").T
 X_test = np.loadtxt("http://www.gatsby.ucl.ac.uk/teaching/courses/ml1/ssm_spins_test.txt").T

@@ -78,16 +78,20 @@ def EP(X, mu, sigma, pie, message0, maxsteps):
                 # update the message from j to i
                 omega0 = f[:, j] + np.sum(message[:, j, :], axis=0) - message[i, j, :]
                 W = -mu[:, i].T @ mu[:, j] / (sigma ** 2)
+
                 # we use our equation for the update to omega
                 omega1 = (np.exp(omega0 + W) + 1) / (1 + np.exp(omega0))
+
                 # we use our damping parameter to help convergence
                 message[j, i, :] = a * message[j, i, :] + (1 - a) * np.log(omega1)
 
                 # update the message from i to j (reverse message)
                 omega0 = f[:, i] + np.sum(message[:, i, :], axis=0) - message[j, i, :]
                 W = -mu[:, j].T @ mu[:, i] / (sigma ** 2)
+
                 # we use our equation for the update to omega
                 omega1 = (np.exp(omega0 + W) + 1) / (1 + np.exp(omega0))
+
                 # we use our damping parameter to help convergence
                 message[i, j,:] = a * message[i, j,:] + (1 - a) * np.log(omega1)
 

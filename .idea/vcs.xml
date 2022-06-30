@@ -2,18 +2,5 @@
 <project version="4">
   <component name="VcsDirectoryMappings">
     <mapping directory="$PROJECT_DIR$" vcs="Git" />
-    <mapping directory="$PROJECT_DIR$/COMP0090" vcs="Git" />
-    <mapping directory="$PROJECT_DIR$/GPRegression" vcs="Git" />
-    <mapping directory="$PROJECT_DIR$/Modules/COMP0086/UCL_ML_Assignment" vcs="Git" />
-    <mapping directory="$PROJECT_DIR$/Modules/COMP0090" vcs="Git" />
-    <mapping directory="$PROJECT_DIR$/Modules/COMP0090_git" vcs="Git" />
-    <mapping directory="$PROJECT_DIR$/Modules/Project/GPRegression" vcs="Git" />
-    <mapping directory="$PROJECT_DIR$/Modules/Python cheatsheet/python-cheatsheet" vcs="Git" />
-    <mapping directory="$PROJECT_DIR$/Project/GPRegression" vcs="Git" />
-    <mapping directory="$PROJECT_DIR$/Project/PINNs" vcs="Git" />
-    <mapping directory="$PROJECT_DIR$/Project/PyViability" vcs="Git" />
-    <mapping directory="$PROJECT_DIR$/Project/Ridge_3" vcs="Git" />
-    <mapping directory="$PROJECT_DIR$/Project/ays-model" vcs="Git" />
-    <mapping directory="$PROJECT_DIR$/Project/pyDRLinWESM" vcs="Git" />
   </component>
 </project>
